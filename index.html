@@ -22,7 +22,7 @@
 <div class="container">
     <h1>KAMRAN-MD Script Hub</h1>
 
-    <!-- Admin Panel (Sirf aapke liye) -->
+    <!-- Admin Panel -->
     <div class="card">
         <h2>Admin Upload Panel</h2>
         <form id="uploadForm">
@@ -31,7 +31,7 @@
             <textarea id="code" rows="6" placeholder="Paste your JavaScript/Bot code here..." required></textarea>
             <input type="password" id="adminSecret" placeholder="Enter Admin Secret Password" required>
             <button type="submit">Save to MongoDB</button>
-        </main>
+        </form>
     </div>
 
     <!-- Public Scripts List -->
@@ -42,9 +42,9 @@
 </div>
 
 <script>
-    const API_URL = 'http://localhost:3000/api';
+    // Vercel par automatically current domain use hoga, local par localhost:3000
+    const API_URL = window.location.origin.includes('localhost') ? 'http://localhost:3000/api' : '/api';
 
-    // Handle Admin Form Submission
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('title').value;
@@ -68,7 +68,6 @@
         }
     });
 
-    // Load Scripts for Public Users
     async function loadScripts() {
         try {
             const res = await fetch(`${API_URL}/scripts`);
@@ -87,11 +86,10 @@
                 </div>
             `).join('');
         } catch (err) {
-            document.getElementById('scriptsContainer').innerHTML = '<p>Failed to load scripts from server.</p>';
+            container.innerHTML = '<p>Failed to load scripts from server.</p>';
         }
     }
 
-    // Helper to copy code
     function copyCode(elementId) {
         const text = document.getElementById(elementId).innerText;
         navigator.clipboard.writeText(text);
