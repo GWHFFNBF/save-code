@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,7 @@ const ScriptSchema = new mongoose.Schema({
 
 const Script = mongoose.models.Script || mongoose.model('Script', ScriptSchema);
 
+// API Routes
 app.post('/api/add-script', async (req, res) => {
     await connectDB();
     try {
@@ -54,6 +56,11 @@ app.get('/api/scripts', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
+});
+
+// Serve index.html using your method
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 module.exports = app;
