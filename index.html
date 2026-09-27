@@ -9,7 +9,7 @@
         .container { max-width: 800px; margin: auto; }
         h1, h2 { color: #38bdf8; text-align: center; }
         .card { background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; }
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; }
         button { background: #0284c7; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%; }
         button:hover { background: #0369a1; }
         pre { background: #0f172a; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #334155; position: relative; }
@@ -22,7 +22,6 @@
 <div class="container">
     <h1>KAMRAN-MD Script Hub</h1>
 
-    <!-- Admin Panel -->
     <div class="card">
         <h2>Admin Upload Panel</h2>
         <form id="uploadForm">
@@ -34,7 +33,6 @@
         </form>
     </div>
 
-    <!-- Public Scripts List -->
     <div class="card">
         <h2>Available Bot Scripts</h2>
         <div id="scriptsContainer">Loading scripts...</div>
@@ -42,8 +40,7 @@
 </div>
 
 <script>
-    // Vercel par automatically current domain use hoga, local par localhost:3000
-    const API_URL = window.location.origin.includes('localhost') ? 'http://localhost:3000/api' : '/api';
+    const API_URL = '/api';
 
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
         e.preventDefault();
