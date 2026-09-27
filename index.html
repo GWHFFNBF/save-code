@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMRAN-MD - Script Sharing Hub</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        h1, h2 { color: #38bdf8; text-align: center; }
+        .card { background: #1e293b; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        input, textarea, select { width: 100%; padding: 10px; margin: 8px 0; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px; box-sizing: border-box; }
+        button { background: #0284c7; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%; }
+        button:hover { background: #0369a1; }
+        pre { background: #0f172a; padding: 15px; border-radius: 5px; overflow-x: auto; border: 1px solid #334155; position: relative; }
+        .copy-btn { position: absolute; top: 10px; right: 10px; background: #22c55e; padding: 5px 10px; font-size: 12px; width: auto; }
+        .script-box { margin-bottom: 15px; background: #1e293b; padding: 15px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>KAMRAN-MD Script Hub</h1>
+
+    <!-- Admin Panel (Sirf aapke liye) -->
+    <div class="card">
+        <h2>Admin Upload Panel</h2>
+        <form id="uploadForm">
+            <input type="text" id="title" placeholder="Script Title (e.g. Autoreaction Plugin)" required>
+            <input type="text" id="category" placeholder="Category (e.g. Baileys / WhatsApp)" required>
+            <textarea id="code" rows="6" placeholder="Paste your JavaScript/Bot code here..." required></textarea>
+            <input type="password" id="adminSecret" placeholder="Enter Admin Secret Password" required>
+            <button type="submit">Save to MongoDB</button>
+        </main>
+    </div>
+
+    <!-- Public Scripts List -->
+    <div class="card">
+        <h2>Available Bot Scripts</h2>
+        <div id="scriptsContainer">Loading scripts...</div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000/api';
+
+    // Handle Admin Form Submission
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const code = document.getElementById('code').value;
+        const adminSecret = document.getElementById('adminSecret').value;
+
+        const res = await fetch(`${API_URL}/add-script`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, category, code, adminSecret })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert('Script successfully saved to MongoDB!');
+            document.getElementById('uploadForm').reset();
+            loadScripts();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+
+    // Load Scripts for Public Users
+    async function loadScripts() {
+        try {
+            const res = await fetch(`${API_URL}/scripts`);
+            const scripts = await res.json();
+            const container = document.getElementById('scriptsContainer');
+            
+            if (scripts.length === 0) {
+                container.innerHTML = '<p>No scripts available yet.</p>';
+                return;
+            }
+
+            container.innerHTML = scripts.map(s => `
+                <div class="script-box">
+                    <h3>${s.title} <span style="font-size:12px; color:#38bdf8;">(${s.category})</span></h3>
+                    <pre><code id="code-${s._id}">${escapeHtml(s.code)}</code><button class="copy-btn" onclick="copyCode('code-${s._id}')">Copy</button></pre>
+                </div>
+            `).join('');
+        } catch (err) {
+            document.getElementById('scriptsContainer').innerHTML = '<p>Failed to load scripts from server.</p>';
+        }
+    }
+
+    // Helper to copy code
+    function copyCode(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text);
+        alert('Code copied to clipboard!');
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    loadScripts();
+</script>
+
+</body>
+</html>
